@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".RotationActivity">
+
+    <TextView
+        android:id="@+id/headingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Heading"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/constantHeadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headingTextView"
+        android:layout_marginTop="16dp"
+        android:text="Constant Heading"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/markerInfoTextView"
+        android:layout_below="@id/constantHeadingTextView"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Marker Info"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/restartButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/markerInfoTextView"
+        android:layout_marginTop="32dp"
+        android:text="Restart"
+        android:onClick="restartMainActivity" />
+</RelativeLayout>
