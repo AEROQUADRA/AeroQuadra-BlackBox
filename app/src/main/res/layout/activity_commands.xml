@@ -4,46 +4,37 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/btnStartDetect"
+        android:id="@+id/btnGreen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Detect"
+        android:text="Green"
         android:layout_centerInParent="true"/>
 
     <Button
-        android:id="@+id/btnCommands"
+        android:id="@+id/btnRed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Commands"
-        android:layout_below="@id/btnStartDetect"
+        android:text="Red"
+        android:layout_below="@id/btnGreen"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
+    <!-- TextView to display command status -->
     <TextView
-        android:id="@+id/txtRES"
+        android:id="@+id/txtCommandStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Response:"
-        android:layout_below="@id/btnCommands"
-        android:layout_marginTop="24dp"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:id="@+id/txtSSID"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SSID:"
-        android:layout_below="@id/txtRES"
+        android:layout_below="@id/btnRed"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
+    <!-- TextView to display command result -->
     <TextView
-        android:id="@+id/txtIP"
+        android:id="@+id/txtResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="IP:"
-        android:layout_below="@id/txtSSID"
-        android:layout_marginTop="8dp"
+        android:layout_below="@id/txtCommandStatus"
+        android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
