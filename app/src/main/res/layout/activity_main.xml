@@ -1,21 +1,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <Button
-        android:id="@+id/btnStartDetect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="STR" />
 
     <Button
         android:id="@+id/btnCommands"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Commands"
-        android:layout_below="@id/btnStartDetect"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
@@ -37,12 +29,30 @@
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
+    <Button
+        android:id="@+id/btnSetMoveDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Move Duration"
+        android:layout_below="@id/btnDetectAruco"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/txtMoveDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Move Duration: Unknown"
+        android:layout_below="@id/btnSetMoveDuration"
+        android:layout_marginTop="24dp"
+        android:layout_centerHorizontal="true"/>
+
     <TextView
         android:id="@+id/txtRES"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Response:"
-        android:layout_below="@id/btnDetectAruco"
+        android:layout_below="@id/txtMoveDuration"
         android:layout_marginTop="24dp"
         android:layout_centerHorizontal="true"/>
 
@@ -70,16 +80,6 @@
         android:layout_height="wrap_content"
         android:text="Calibration Status: Unknown"
         android:layout_below="@id/txtIP"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
-
-    <EditText
-        android:id="@+id/edtMoveDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Move Duration (ms)"
-        android:inputType="number"
-        android:layout_below="@id/txtCalibrationStatus"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
