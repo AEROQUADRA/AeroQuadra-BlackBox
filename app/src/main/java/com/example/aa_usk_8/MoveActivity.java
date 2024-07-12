@@ -1,8 +1,9 @@
 package com.example.aa_usk_8;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,67 +18,84 @@ import okhttp3.Response;
 
 public class MoveActivity extends AppCompatActivity {
 
-    private static final String TAG = "MoveActivity";
-    private TextView txtMovementStatus;
+    private TextView countdownTextView, statusTextView;
     private OkHttpClient client = new OkHttpClient();
+    private int moveDuration;
+    private int detectedMarkerId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_move);
 
-        txtMovementStatus = findViewById(R.id.txtMovementStatus);
+        countdownTextView = findViewById(R.id.countdownTextView);
+        statusTextView = findViewById(R.id.statusTextView);
 
-        // Send FORWARD command
-        sendCommand("FORWARD");
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        moveDuration = prefs.getInt("moveDuration", 3000);
 
-        // Set duration to move forward (in milliseconds)
-        int moveDuration = getMoveDuration();
+        detectedMarkerId = getIntent().getIntExtra("detectedMarkerId", -1);
 
-        // Schedule STOP command and transition to next activity
-        new Handler().postDelayed(() -> {
-            sendCommand("STOP");
-            startRotationActivity();
-        }, moveDuration);
+        if (detectedMarkerId == -1) {
+            Toast.makeText(this, "No marker detected. Returning to DetectArucoActivity.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, DetectArucoActivity.class));
+            finish();
+            return;
+        }
+
+        startMove();
     }
 
-    private int getMoveDuration() {
-        // Retrieve move duration from SharedPreferences or use default value
-        return getSharedPreferences("settings", MODE_PRIVATE).getInt("moveDuration", 3000); // Default to 3000ms
+    private void startMove() {
+        if (detectedMarkerId == 0) {
+            sendCommand("STOP");
+            startProgramEndsActivity();
+            return;
+        }
+
+        sendCommand("FORWARD");
+        new CountDownTimer(moveDuration, 100) {
+
+            public void onTick(long millisUntilFinished) {
+                countdownTextView.setText("Moving: " + millisUntilFinished / 1000.0 + " seconds remaining");
+            }
+
+            public void onFinish() {
+                sendCommand("STOP");
+                startRotationActivity();
+            }
+        }.start();
+    }
+
+    private void startProgramEndsActivity() {
+        Intent intent = new Intent(this, ProgramEndsActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void startRotationActivity() {
+        Intent intent = new Intent(this, RotationActivity.class);
+        intent.putExtra("detectedMarkerId", detectedMarkerId);
+        startActivity(intent);
+        finish();
     }
 
     private void sendCommand(String cmd) {
         new Thread(() -> {
             String command = "http://192.168.4.1/" + cmd;
-            Log.d(TAG, command);
+            Log.d("Command", command);
             Request request = new Request.Builder().url(command).build();
             try {
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful()) {
-                    final String myResponse = response.body().string();
-                    runOnUiThread(() -> {
-                        txtMovementStatus.setText("Command sent: " + cmd + "\nResponse: " + myResponse);
-                        Toast.makeText(MoveActivity.this, "Command sent: " + cmd, Toast.LENGTH_SHORT).show();
-                    });
+                    runOnUiThread(() -> statusTextView.setText("Command sent: " + cmd));
                 } else {
-                    runOnUiThread(() -> {
-                        txtMovementStatus.setText("Error: " + response.code());
-                        Toast.makeText(MoveActivity.this, "Failed to send command: " + cmd, Toast.LENGTH_SHORT).show();
-                    });
+                    runOnUiThread(() -> statusTextView.setText("Failed to send command: " + cmd));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                runOnUiThread(() -> {
-                    txtMovementStatus.setText("IOException: " + e.getMessage());
-                    Toast.makeText(MoveActivity.this, "Failed to send command: " + cmd, Toast.LENGTH_SHORT).show();
-                });
+                runOnUiThread(() -> statusTextView.setText("IOException: " + e.getMessage()));
             }
         }).start();
-    }
-
-    private void startRotationActivity() {
-        Intent intent = new Intent(this, RotationActivity.class);
-        startActivity(intent);
-        finish(); // Finish MoveActivity so it's not kept in the back stack
     }
 }

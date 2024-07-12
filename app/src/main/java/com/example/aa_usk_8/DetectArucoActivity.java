@@ -1,4 +1,3 @@
-// DetectArucoActivity.java
 package com.example.aa_usk_8;
 
 import android.content.Intent;
@@ -7,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.opencv.android.CameraActivity;
 import org.opencv.android.CameraBridgeViewBase;
@@ -34,7 +35,7 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
     private DetectorParameters detectorParameters;
 
     private Mat mRgba;
-    private Mat mRgb; // Add this for RGB conversion
+    private Mat mRgb;
     private Mat mGray;
 
     // Camera parameters
@@ -113,7 +114,7 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
     @Override
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
-        mRgb = new Mat(height, width, CvType.CV_8UC3); // Initialize mRgb
+        mRgb = new Mat(height, width, CvType.CV_8UC3);
         mGray = new Mat(height, width, CvType.CV_8UC1);
         Log.i(TAG, "Camera view started");
     }
@@ -121,7 +122,7 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
     @Override
     public void onCameraViewStopped() {
         mRgba.release();
-        mRgb.release(); // Release mRgb
+        mRgb.release();
         mGray.release();
         Log.i(TAG, "Camera view stopped");
     }
@@ -129,11 +130,10 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
-        Imgproc.cvtColor(mRgba, mRgb, Imgproc.COLOR_RGBA2RGB); // Convert RGBA to RGB
-        Imgproc.cvtColor(mRgb, mGray, Imgproc.COLOR_RGB2GRAY); // Convert RGB to Grayscale
+        Imgproc.cvtColor(mRgba, mRgb, Imgproc.COLOR_RGBA2RGB);
+        Imgproc.cvtColor(mRgb, mGray, Imgproc.COLOR_RGB2GRAY);
         Log.i(TAG, "Frame captured and converted to grayscale");
 
-        // Perform marker detection
         List<Mat> corners = new ArrayList<>();
         Mat ids = new Mat();
         Aruco.detectMarkers(mGray, dictionary, corners, ids, detectorParameters);
@@ -141,7 +141,7 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
 
         if (ids.total() > 0) {
             try {
-                Aruco.drawDetectedMarkers(mRgb, corners, ids); // Draw markers on the RGB image
+                Aruco.drawDetectedMarkers(mRgb, corners, ids);
                 Log.i(TAG, "Detected markers drawn on frame");
 
                 Mat rvecs = new Mat();
@@ -149,10 +149,11 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
                 Aruco.estimatePoseSingleMarkers(corners, 0.05f, cameraMatrix, distCoeffs, rvecs, tvecs);
                 Log.i(TAG, "Pose estimation performed");
 
-                // Find the closest marker
                 int closestMarkerId = -1;
                 double closestDistance = Double.MAX_VALUE;
+
                 for (int i = 0; i < ids.rows(); i++) {
+                    double[] rvec = rvecs.get(i, 0);
                     double[] tvec = tvecs.get(i, 0);
                     double distance = Math.sqrt(tvec[0] * tvec[0] + tvec[1] * tvec[1] + tvec[2] * tvec[2]) * 100; // Convert to cm
 
@@ -161,24 +162,20 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
                         closestMarkerId = (int) ids.get(i, 0)[0];
                     }
 
-                    // Draw the axis for each marker
-                    Calib3d.drawFrameAxes(mRgb, cameraMatrix, distCoeffs, new MatOfDouble(rvecs.get(i, 0)), new MatOfDouble(tvec), 0.05f);
-                    Log.i(TAG, "Frame axes drawn for marker ID: " + (int) ids.get(i, 0)[0]);
-
-                    // Display the distance
+                    Calib3d.drawFrameAxes(mRgb, cameraMatrix, distCoeffs, new MatOfDouble(rvec), new MatOfDouble(tvec), 0.05f);
                     String distanceStr = String.format("ID: %d Distance: %.2f cm", (int) ids.get(i, 0)[0], distance);
                     Point textPosition = new Point(corners.get(i).get(0, 0));
                     Imgproc.putText(mRgb, distanceStr, textPosition, Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 0, 0), 2);
                     Log.i(TAG, "Distance displayed for marker ID: " + (int) ids.get(i, 0)[0]);
                 }
 
-                // Navigate to MoveActivity with the closest marker ID
                 if (closestMarkerId != -1) {
-                    Intent intent = new Intent(DetectArucoActivity.this, MoveActivity.class);
+                    Intent intent = new Intent(this, MoveActivity.class);
                     intent.putExtra("detectedMarkerId", closestMarkerId);
-                    intent.putExtra("distanceToMarker", closestDistance);
                     startActivity(intent);
+                    finish();
                 }
+
             } catch (Exception e) {
                 Log.e(TAG, "Error drawing detected markers: " + e.getMessage());
             }
@@ -186,13 +183,13 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
             Log.i(TAG, "No markers detected");
         }
 
-        return mRgb; // Return the RGB image
+        return mRgb;
     }
 
     private Mat stringToMat(String matString) {
         String[] values = matString.split(",");
         int numValues = values.length;
-        int size = (int) Math.sqrt(numValues); // Assume it's a square matrix
+        int size = (int) Math.sqrt(numValues);
 
         if (size * size != numValues) {
             throw new IllegalArgumentException("Invalid matrix string format.");

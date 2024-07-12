@@ -18,19 +18,15 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.AlertDialog;
-import android.text.InputType;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1;
 
-    Button btnCommands, btnCalibrate, btnDetectAruco, btnSetMoveDuration;
+    Button btnCommands, btnCalibrate, btnDetectAruco;
     TextView txtRES, txtSSID, txtIP, txtCalibrationStatus, txtMoveDuration;
 
     @Override
@@ -41,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
         btnCommands = findViewById(R.id.btnCommands);
         btnCalibrate = findViewById(R.id.btnCalibrate);
         btnDetectAruco = findViewById(R.id.btnDetectAruco);
-        btnSetMoveDuration = findViewById(R.id.btnSetMoveDuration);
         txtRES = findViewById(R.id.txtRES);
         txtSSID = findViewById(R.id.txtSSID);
         txtIP = findViewById(R.id.txtIP);
@@ -50,9 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Check and display calibration status
         checkCalibrationStatus();
-
-        // Display current move duration
-        displayMoveDuration();
 
         // Request necessary permissions
         if (checkAndRequestPermissions()) {
@@ -74,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnSetMoveDuration.setOnClickListener(v -> showMoveDurationDialog());
+        // Display current move duration
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        int moveDuration = prefs.getInt("moveDuration", 3000);
+        txtMoveDuration.setText("Move Duration: " + moveDuration + " ms");
     }
 
     private void checkCalibrationStatus() {
@@ -85,12 +80,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             txtCalibrationStatus.setText("Camera is not calibrated.");
         }
-    }
-
-    private void displayMoveDuration() {
-        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        int moveDuration = prefs.getInt("moveDuration", 3000); // Default to 3000ms
-        txtMoveDuration.setText("Move Duration: " + moveDuration + " ms");
     }
 
     private boolean checkAndRequestPermissions() {
@@ -149,38 +138,6 @@ public class MainActivity extends AppCompatActivity {
                 txtIP.setText("IP: " + ip);
             });
         }
-    }
-
-    private void showMoveDurationDialog() {
-        Log.d("MainActivity", "showMoveDurationDialog called");
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Set Move Duration (ms)");
-
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        builder.setView(input);
-
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            try {
-                int moveDuration = Integer.parseInt(input.getText().toString());
-                SharedPreferences.Editor editor = getSharedPreferences("settings", MODE_PRIVATE).edit();
-                editor.putInt("moveDuration", moveDuration);
-                editor.apply();
-                Toast.makeText(this, "Move duration set to " + moveDuration + " ms", Toast.LENGTH_SHORT).show();
-                Log.d("MainActivity", "Move duration set to " + moveDuration + " ms");
-                displayMoveDuration(); // Update displayed move duration
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Invalid input. Please enter a number.", Toast.LENGTH_SHORT).show();
-                Log.d("MainActivity", "Invalid input for move duration");
-            }
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> {
-            dialog.cancel();
-            Log.d("MainActivity", "Move duration dialog canceled");
-        });
-
-        builder.show();
     }
 
     @Override

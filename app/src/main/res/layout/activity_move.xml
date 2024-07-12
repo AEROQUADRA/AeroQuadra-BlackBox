@@ -1,14 +1,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MoveActivity">
+    android:padding="16dp">
 
     <TextView
-        android:id="@+id/txtMovementStatus"
+        android:id="@+id/countdownTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Moving..."
+        android:text="Countdown"
         android:textSize="24sp"
-        android:layout_centerInParent="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textSize="18sp"
+        android:layout_below="@id/countdownTextView"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>
