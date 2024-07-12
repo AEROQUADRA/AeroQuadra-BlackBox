@@ -20,7 +20,7 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
 
     private long lastDetectionTime = 0;
     private static final long MIN_DETECT_INTERVAL_MS = 1000 / 30; // Minimum interval between detections (in milliseconds)
-    private float initialAzimuth = 0; // Store the initial azimuth value
+    private float initialAzimuth = -1; // Store the initial azimuth value
     private boolean moveActivityStarted = false; // Flag to track if MoveActivity has been started
 
     @Override
@@ -31,9 +31,6 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
         realTimeHeadingTextView = findViewById(R.id.headingTextView);
         constantHeadingTextView = findViewById(R.id.constantHeadingTextView);
         markerInfoTextView = findViewById(R.id.markerInfoTextView);
-
-        // Initialize constant heading with a default value
-        constantHeadingTextView.setText("Constant Heading: " + Math.round(initialAzimuth) + "°");
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {
@@ -87,55 +84,25 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
             runOnUiThread(() -> realTimeHeadingTextView.setText(realTimeHeading));
 
             // Update constant heading if it hasn't been updated yet
-            if (initialAzimuth == 0) {
+            if (initialAzimuth == -1) {
                 initialAzimuth = azimuth;
                 final String constantHeading = "Constant Heading: " + Math.round(initialAzimuth) + "°";
                 runOnUiThread(() -> constantHeadingTextView.setText(constantHeading));
             }
 
             // Display detected marker info
-            String detectedMarkerId = getIntent().getStringExtra("detectedMarkerId");
-            if (detectedMarkerId != null) {
-                int markerId = Integer.parseInt(detectedMarkerId); // Convert to integer
-
+            int detectedMarkerId = getIntent().getIntExtra("detectedMarkerId", -1);
+            if (detectedMarkerId != -1) {
                 // Calculate the required heading to align with the detected marker direction
-                float requiredHeading = calculateRequiredHeading(markerId);
+                float requiredHeading = calculateRequiredHeading(detectedMarkerId);
 
                 // Check if current heading is within an acceptable range of the required heading
                 if (Math.abs(azimuth - requiredHeading) <= 5 && !moveActivityStarted) {
+                    Toast.makeText(this, "Heading met for marker ID: " + detectedMarkerId, Toast.LENGTH_SHORT).show();
                     startDetectArucoActivity();
                 }
 
-                String direction;
-                switch (markerId) {
-                    case 1:
-                        direction = "East";
-                        break;
-                    case 2:
-                        direction = "South East";
-                        break;
-                    case 3:
-                        direction = "South";
-                        break;
-                    case 4:
-                        direction = "South West";
-                        break;
-                    case 5:
-                        direction = "West";
-                        break;
-                    case 6:
-                        direction = "North West";
-                        break;
-                    case 7:
-                        direction = "North";
-                        break;
-                    case 8:
-                        direction = "North East";
-                        break;
-                    default:
-                        direction = ""; // If markerId is not 1-8, ignore it
-                        break;
-                }
+                String direction = getDirectionFromMarkerId(detectedMarkerId);
 
                 if (!direction.isEmpty()) {
                     markerInfoTextView.setText("Detected Marker ID: " + detectedMarkerId + "\nDirection: " + direction);
@@ -173,6 +140,29 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
                 return (constantHeading + 45) % 360; // North East
             default:
                 return constantHeading; // Default to constant heading
+        }
+    }
+
+    private String getDirectionFromMarkerId(int markerId) {
+        switch (markerId) {
+            case 1:
+                return "East";
+            case 2:
+                return "South East";
+            case 3:
+                return "South";
+            case 4:
+                return "South West";
+            case 5:
+                return "West";
+            case 6:
+                return "North West";
+            case 7:
+                return "North";
+            case 8:
+                return "North East";
+            default:
+                return ""; // If markerId is not 1-8, ignore it
         }
     }
 

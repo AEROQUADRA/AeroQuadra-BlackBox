@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         btnStartDetect.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, DetectActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(MainActivity.this, DetectActivity.class);
+//            startActivity(intent);
         });
 
         btnCommands.setOnClickListener(v -> {
