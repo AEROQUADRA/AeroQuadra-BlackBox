@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -25,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1;
 
-    Button btnStartDetect, btnCommands;
-    TextView txtRES, txtSSID, txtIP;
+    Button btnStartDetect, btnCommands, btnCalibrate, btnDetectAruco;
+    TextView txtRES, txtSSID, txtIP, txtCalibrationStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +36,15 @@ public class MainActivity extends AppCompatActivity {
 
         btnStartDetect = findViewById(R.id.btnStartDetect);
         btnCommands = findViewById(R.id.btnCommands);
+        btnCalibrate = findViewById(R.id.btnCalibrate);
+        btnDetectAruco = findViewById(R.id.btnDetectAruco);
         txtRES = findViewById(R.id.txtRES);
         txtSSID = findViewById(R.id.txtSSID);
         txtIP = findViewById(R.id.txtIP);
+        txtCalibrationStatus = findViewById(R.id.txtCalibrationStatus);
+
+        // Check and display calibration status
+        checkCalibrationStatus();
 
         // Request necessary permissions
         if (checkAndRequestPermissions()) {
@@ -53,6 +60,26 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, CommandsActivity.class);
             startActivity(intent);
         });
+
+        btnCalibrate.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CameraCalibrationActivity.class);
+            startActivity(intent);
+        });
+
+        btnDetectAruco.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, DetectArucoActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    private void checkCalibrationStatus() {
+        SharedPreferences prefs = getSharedPreferences("cameraCalibration", MODE_PRIVATE);
+        boolean isCalibrated = prefs.getBoolean("isCalibrated", false);
+        if (isCalibrated) {
+            txtCalibrationStatus.setText("Camera is calibrated.");
+        } else {
+            txtCalibrationStatus.setText("Camera is not calibrated.");
+        }
     }
 
     private boolean checkAndRequestPermissions() {
@@ -106,12 +133,9 @@ public class MainActivity extends AppCompatActivity {
                     (ipAddress >> 24 & 0xff));
 
             // Update UI on the main thread
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    txtSSID.setText("SSID: " + ssid);
-                    txtIP.setText("IP: " + ip);
-                }
+            runOnUiThread(() -> {
+                txtSSID.setText("SSID: " + ssid);
+                txtIP.setText("IP: " + ip);
             });
         }
     }

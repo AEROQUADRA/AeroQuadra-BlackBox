@@ -17,8 +17,15 @@ import org.opencv.aruco.Dictionary;
 import org.opencv.aruco.DetectorParameters;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfDouble;
 import org.opencv.core.MatOfInt;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.MatOfPoint3f;
+import org.opencv.core.Point3;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.calib3d.Calib3d;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +42,10 @@ public class DetectActivity extends CameraActivity implements CameraBridgeViewBa
     private CameraBridgeViewBase mOpenCvCameraView;
 
     private boolean isWaitingForMarkers = false;
+
+    // Camera parameters
+    private Mat cameraMatrix;
+    private MatOfDouble distCoeffs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +68,26 @@ public class DetectActivity extends CameraActivity implements CameraBridgeViewBa
 
         dictionary = Aruco.getPredefinedDictionary(Aruco.DICT_4X4_250);
         detectorParameters = DetectorParameters.create();
+
+        // Define camera parameters
+        cameraMatrix = new Mat(3, 3, CvType.CV_64F);
+        distCoeffs = new MatOfDouble(new double[]{0, 0, 0, 0, 0});
+
+        // Assuming fx = fy and cx, cy are the principal point coordinates
+        // Set these according to your camera calibration
+        double focalLength = 800; // Example value, set according to your calibration
+        double principalPointX = 640; // Example value, set according to your calibration
+        double principalPointY = 480; // Example value, set according to your calibration
+
+        cameraMatrix.put(0, 0, focalLength);
+        cameraMatrix.put(0, 1, 0);
+        cameraMatrix.put(0, 2, principalPointX);
+        cameraMatrix.put(1, 0, 0);
+        cameraMatrix.put(1, 1, focalLength);
+        cameraMatrix.put(1, 2, principalPointY);
+        cameraMatrix.put(2, 0, 0);
+        cameraMatrix.put(2, 1, 0);
+        cameraMatrix.put(2, 2, 1);
     }
 
     @Override
@@ -109,7 +140,7 @@ public class DetectActivity extends CameraActivity implements CameraBridgeViewBa
 
         // Check if markers are detected
         if (ids.total() > 0) {
-            handleMarkerDetection(ids);
+            handleMarkerDetection(ids, corners);
             isWaitingForMarkers = false; // Reset flag if markers are detected
         } else {
             if (!isWaitingForMarkers) {
@@ -121,7 +152,7 @@ public class DetectActivity extends CameraActivity implements CameraBridgeViewBa
         return mRgba;
     }
 
-    private void handleMarkerDetection(Mat ids) {
+    private void handleMarkerDetection(Mat ids, List<Mat> corners) {
         MatOfInt idsMatOfInt = new MatOfInt(ids);
         int[] idsArray = idsMatOfInt.toArray();
 
@@ -138,9 +169,21 @@ public class DetectActivity extends CameraActivity implements CameraBridgeViewBa
             Intent intent = new Intent(DetectActivity.this, ProgramEndsActivity.class);
             startActivity(intent);
         } else {
-            // Start RotationActivity and pass detected marker ID
+            // Perform pose estimation
+            Mat rvecs = new Mat();
+            Mat tvecs = new Mat();
+            Aruco.estimatePoseSingleMarkers(corners, 0.05f, cameraMatrix, distCoeffs, rvecs, tvecs);
+
+            // Assuming only one marker is detected
+            double[] tvec = tvecs.get(0, 0);
+            double distance = Math.sqrt(tvec[0] * tvec[0] + tvec[1] * tvec[1] + tvec[2] * tvec[2]) * 1000; // Convert to mm
+
+            Log.i(TAG, "Distance to marker (mm): " + distance);
+
+            // Start RotationActivity and pass detected marker ID and distance
             Intent intent = new Intent(DetectActivity.this, RotationActivity.class);
             intent.putExtra("detectedMarkerId", String.valueOf(idsArray[0])); // Assuming only one marker is detected
+            intent.putExtra("distanceToMarker", distance);
             startActivity(intent);
         }
     }
