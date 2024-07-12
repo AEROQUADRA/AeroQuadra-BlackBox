@@ -19,6 +19,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button btnStartDetect, btnCommands, btnCalibrate, btnDetectAruco;
     TextView txtRES, txtSSID, txtIP, txtCalibrationStatus;
+    EditText edtMoveDuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         txtSSID = findViewById(R.id.txtSSID);
         txtIP = findViewById(R.id.txtIP);
         txtCalibrationStatus = findViewById(R.id.txtCalibrationStatus);
+        edtMoveDuration = findViewById(R.id.edtMoveDuration);
 
         // Check and display calibration status
         checkCalibrationStatus();
@@ -67,9 +70,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnDetectAruco.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, DetectArucoActivity.class);
-            startActivity(intent);
+            // Save the move duration to SharedPreferences
+            String durationStr = edtMoveDuration.getText().toString();
+            if (!durationStr.isEmpty()) {
+                SharedPreferences prefs = getSharedPreferences("robotConfig", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("moveDuration", Integer.parseInt(durationStr));
+                editor.apply();
+
+                Intent intent = new Intent(MainActivity.this, DetectArucoActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Please enter a move duration", Toast.LENGTH_LONG).show();
+            }
         });
+
+        // Load the saved move duration
+        SharedPreferences prefs = getSharedPreferences("robotConfig", MODE_PRIVATE);
+        int savedDuration = prefs.getInt("moveDuration", 2000); // Default to 2000 ms
+        edtMoveDuration.setText(String.valueOf(savedDuration));
     }
 
     private void checkCalibrationStatus() {

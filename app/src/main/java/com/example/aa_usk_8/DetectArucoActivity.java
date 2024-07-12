@@ -1,12 +1,12 @@
+// DetectArucoActivity.java
 package com.example.aa_usk_8;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.opencv.android.CameraActivity;
 import org.opencv.android.CameraBridgeViewBase;
@@ -149,13 +149,20 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
                 Aruco.estimatePoseSingleMarkers(corners, 0.05f, cameraMatrix, distCoeffs, rvecs, tvecs);
                 Log.i(TAG, "Pose estimation performed");
 
+                // Find the closest marker
+                int closestMarkerId = -1;
+                double closestDistance = Double.MAX_VALUE;
                 for (int i = 0; i < ids.rows(); i++) {
-                    double[] rvec = rvecs.get(i, 0);
                     double[] tvec = tvecs.get(i, 0);
                     double distance = Math.sqrt(tvec[0] * tvec[0] + tvec[1] * tvec[1] + tvec[2] * tvec[2]) * 100; // Convert to cm
 
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestMarkerId = (int) ids.get(i, 0)[0];
+                    }
+
                     // Draw the axis for each marker
-                    Calib3d.drawFrameAxes(mRgb, cameraMatrix, distCoeffs, new MatOfDouble(rvec), new MatOfDouble(tvec), 0.05f);
+                    Calib3d.drawFrameAxes(mRgb, cameraMatrix, distCoeffs, new MatOfDouble(rvecs.get(i, 0)), new MatOfDouble(tvec), 0.05f);
                     Log.i(TAG, "Frame axes drawn for marker ID: " + (int) ids.get(i, 0)[0]);
 
                     // Display the distance
@@ -163,6 +170,14 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
                     Point textPosition = new Point(corners.get(i).get(0, 0));
                     Imgproc.putText(mRgb, distanceStr, textPosition, Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 0, 0), 2);
                     Log.i(TAG, "Distance displayed for marker ID: " + (int) ids.get(i, 0)[0]);
+                }
+
+                // Navigate to MoveActivity with the closest marker ID
+                if (closestMarkerId != -1) {
+                    Intent intent = new Intent(DetectArucoActivity.this, MoveActivity.class);
+                    intent.putExtra("detectedMarkerId", closestMarkerId);
+                    intent.putExtra("distanceToMarker", closestDistance);
+                    startActivity(intent);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error drawing detected markers: " + e.getMessage());

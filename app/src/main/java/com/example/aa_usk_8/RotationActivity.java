@@ -84,23 +84,13 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
 
             // Update real-time heading
             final String realTimeHeading = "Real-Time Heading: " + Math.round(azimuth) + "°";
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    realTimeHeadingTextView.setText(realTimeHeading);
-                }
-            });
+            runOnUiThread(() -> realTimeHeadingTextView.setText(realTimeHeading));
 
             // Update constant heading if it hasn't been updated yet
             if (initialAzimuth == 0) {
                 initialAzimuth = azimuth;
                 final String constantHeading = "Constant Heading: " + Math.round(initialAzimuth) + "°";
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        constantHeadingTextView.setText(constantHeading);
-                    }
-                });
+                runOnUiThread(() -> constantHeadingTextView.setText(constantHeading));
             }
 
             // Display detected marker info
@@ -113,7 +103,7 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
 
                 // Check if current heading is within an acceptable range of the required heading
                 if (Math.abs(azimuth - requiredHeading) <= 5 && !moveActivityStarted) {
-                    startMoveActivity();
+                    startDetectArucoActivity();
                 }
 
                 String direction;
@@ -168,7 +158,7 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
             case 1:
                 return (constantHeading + 90) % 360; // East
             case 2:
-                return (constantHeading + 45) % 360; // South East
+                return (constantHeading + 135) % 360; // South East
             case 3:
                 return (constantHeading + 180) % 360; // South
             case 4:
@@ -186,10 +176,10 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
-    private void startMoveActivity() {
-        // Start MoveActivity and prevent multiple starts
+    private void startDetectArucoActivity() {
+        // Start DetectArucoActivity and prevent multiple starts
         moveActivityStarted = true;
-        Intent intent = new Intent(this, MoveActivity.class);
+        Intent intent = new Intent(this, DetectArucoActivity.class);
         startActivity(intent);
         finish(); // Finish RotationActivity so it's not kept in the back stack
     }
