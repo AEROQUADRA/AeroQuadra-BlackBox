@@ -4,10 +4,10 @@
 #include <String.h>
 
 
-#define GREEN LED_BUILTIN
+#define LED LED_BUILTIN
 
 
-const char* ssid = "Yout_Tube_WIFI_APP";
+const char* ssid = "AqdHub";
 const char* password = "12345678";
 WiFiServer server(80);
 
@@ -19,9 +19,9 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.softAPIP());  
 
-  pinMode(GREEN, OUTPUT);
+  pinMode(LED, OUTPUT);
 
-  digitalWrite(GREEN, LOW);
+  digitalWrite(LED, LOW);
 
 }
 
@@ -54,20 +54,32 @@ void loop() {
           // Default message when the command does not match any LED
           all_command = command + " is on";
 
-          if (command.equals("red")) {
-            digitalWrite(GREEN, LOW);
-            all_command = "Green built-in LED is off, Red and Blue are on";
+          if (command.equals("FORWARD")) {
+            digitalWrite(LED, HIGH);
+            all_command = "FORWARD move server";
           }
 
-          if (command.equals("green")) {
-            digitalWrite(GREEN, HIGH);
-            all_command = "Green built-in LED is off, Red and Blue are on";
+          if (command.equals("BACKWARD")) {
+            digitalWrite(LED, HIGH);
+            all_command = "BACKWARD move server";
           }
 
-          if (command.equals("blue")) {
-            all_command = "Nothing";
+          if (command.equals("LEFT")) {
+            digitalWrite(LED, HIGH);
+            all_command = "LEFT move server";
           }
 
+          if (command.equals("RIGHT")) {
+            digitalWrite(LED, HIGH);
+            all_command = "RIGHT move server";
+          }
+
+          if (command.equals("STOP")) {
+            digitalWrite(LED, LOW);
+            all_command = "STOP move server";
+          }
+
+         
           if (client.peek() == '\n') {
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");

@@ -172,6 +172,7 @@ public class DetectArucoActivity extends CameraActivity implements CameraBridgeV
                 if (closestMarkerId != -1) {
                     Intent intent = new Intent(this, MoveActivity.class);
                     intent.putExtra("detectedMarkerId", closestMarkerId);
+                    intent.putExtra("distanceToMarker", closestDistance); // Pass distance to MoveActivity
                     startActivity(intent);
                     finish();
                 }

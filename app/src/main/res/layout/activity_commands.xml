@@ -1,39 +1,57 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
     <Button
-        android:id="@+id/btnGreen"
+        android:id="@+id/btnForward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Green"
-        android:layout_centerInParent="true"/>
+        android:text="FORWARD"
+        android:layout_centerHorizontal="true"/>
 
     <Button
-        android:id="@+id/btnRed"
+        android:id="@+id/btnBackward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Red"
-        android:layout_below="@id/btnGreen"
+        android:text="BACKWARD"
+        android:layout_below="@id/btnForward"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
-    <!-- TextView to display command status -->
-    <TextView
-        android:id="@+id/txtCommandStatus"
+    <Button
+        android:id="@+id/btnLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/btnRed"
+        android:text="LEFT"
+        android:layout_below="@id/btnBackward"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
-    <!-- TextView to display command result -->
+    <Button
+        android:id="@+id/btnRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RIGHT"
+        android:layout_below="@id/btnLeft"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"/>
+
     <TextView
         android:id="@+id/txtResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtCommandStatus"
+        android:text="Result"
+        android:layout_below="@id/btnRight"
+        android:layout_marginTop="24dp"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/txtCommandStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Command Status"
+        android:layout_below="@id/txtResult"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 

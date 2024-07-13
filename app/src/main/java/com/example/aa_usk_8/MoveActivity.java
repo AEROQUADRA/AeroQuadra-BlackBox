@@ -2,6 +2,9 @@ package com.example.aa_usk_8;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -18,10 +21,10 @@ import okhttp3.Response;
 
 public class MoveActivity extends AppCompatActivity {
 
-    private TextView countdownTextView, statusTextView;
+    private TextView countdownTextView, statusTextView, distanceTextView;
     private OkHttpClient client = new OkHttpClient();
-    private int moveDuration;
     private int detectedMarkerId;
+    private double distanceToMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +33,10 @@ public class MoveActivity extends AppCompatActivity {
 
         countdownTextView = findViewById(R.id.countdownTextView);
         statusTextView = findViewById(R.id.statusTextView);
-
-        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        moveDuration = prefs.getInt("moveDuration", 3000);
+        distanceTextView = findViewById(R.id.distanceTextView);
 
         detectedMarkerId = getIntent().getIntExtra("detectedMarkerId", -1);
+        distanceToMarker = getIntent().getDoubleExtra("distanceToMarker", 0.0);
 
         if (detectedMarkerId == -1) {
             Toast.makeText(this, "No marker detected. Returning to DetectArucoActivity.", Toast.LENGTH_LONG).show();
@@ -43,28 +45,54 @@ public class MoveActivity extends AppCompatActivity {
             return;
         }
 
-        startMove();
-    }
-
-    private void startMove() {
         if (detectedMarkerId == 0) {
             sendCommand("STOP");
             startProgramEndsActivity();
             return;
         }
 
-        sendCommand("FORWARD");
-        new CountDownTimer(moveDuration, 100) {
+        // Display the distance
+        distanceTextView.setText(String.format("Distance to Marker: %.2f cm", distanceToMarker));
 
-            public void onTick(long millisUntilFinished) {
-                countdownTextView.setText("Moving: " + millisUntilFinished / 1000.0 + " seconds remaining");
-            }
+        int moveDuration = calculateMoveDuration(distanceToMarker);
 
-            public void onFinish() {
-                sendCommand("STOP");
-                startRotationActivity();
-            }
-        }.start();
+        startMove(moveDuration);
+    }
+
+    private int calculateMoveDuration(double distance) {
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        int wheelRPM = prefs.getInt("wheelRPM", 60); // Default RPM
+
+        // Wheel specifications
+        double wheelDiameter = 43; // mm
+        double wheelCircumference = Math.PI * wheelDiameter; // mm
+
+        // Convert distance from cm to mm
+        double distanceInMm = distance * 10;
+
+        // Calculate the duration
+        double wheelRevolutions = distanceInMm / wheelCircumference;
+        double wheelRevolutionTime = 60.0 / wheelRPM; // Time for one revolution in seconds
+        return (int) (wheelRevolutions * wheelRevolutionTime * 1000); // Convert to milliseconds
+    }
+
+    private void startMove(int duration) {
+        if (isConnected()) {
+            sendCommand("FORWARD");
+            new CountDownTimer(duration, 100) {
+
+                public void onTick(long millisUntilFinished) {
+                    countdownTextView.setText("Moving: " + millisUntilFinished / 1000.0 + " seconds remaining");
+                }
+
+                public void onFinish() {
+                    sendCommand("STOP");
+                    startRotationActivity();
+                }
+            }.start();
+        } else {
+            statusTextView.setText("No network connection. Command not sent.");
+        }
     }
 
     private void startProgramEndsActivity() {
@@ -97,5 +125,15 @@ public class MoveActivity extends AppCompatActivity {
                 runOnUiThread(() -> statusTextView.setText("IOException: " + e.getMessage()));
             }
         }).start();
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            Network network = cm.getActiveNetwork();
+            NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+            return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        }
+        return false;
     }
 }

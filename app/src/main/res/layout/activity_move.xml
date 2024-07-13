@@ -9,8 +9,7 @@
         android:layout_height="wrap_content"
         android:text="Countdown"
         android:textSize="24sp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/statusTextView"
@@ -20,5 +19,15 @@
         android:textSize="18sp"
         android:layout_below="@id/countdownTextView"
         android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/distanceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distance"
+        android:textSize="18sp"
+        android:layout_below="@id/statusTextView"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

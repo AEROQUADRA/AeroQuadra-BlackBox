@@ -1,15 +1,26 @@
 package com.example.aa_usk_8;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.IOException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class RotationActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -23,6 +34,8 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
     private boolean rotationComplete = false;
 
     private int detectedMarkerId;
+
+    private OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +109,24 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
                 initialAzimuth = azimuth;
                 final String constantHeading = "Constant Heading: " + Math.round(initialAzimuth) + "°";
                 runOnUiThread(() -> constantHeadingTextView.setText(constantHeading));
+
+                // Determine rotation direction and send command
+                float requiredHeading = calculateRequiredHeading(detectedMarkerId);
+                if (Math.abs(requiredHeading - initialAzimuth) > 180) {
+                    requiredHeading = (requiredHeading + 360) % 360;
+                }
+                if (requiredHeading > initialAzimuth) {
+                    sendCommand("RIGHT");
+                } else {
+                    sendCommand("LEFT");
+                }
             }
 
             float requiredHeading = calculateRequiredHeading(detectedMarkerId);
 
             if (Math.abs(azimuth - requiredHeading) <= 5 && !rotationComplete) {
                 rotationComplete = true;
+                sendCommand("STOP");
                 Toast.makeText(this, "Heading aligned. Moving to DetectArucoActivity.", Toast.LENGTH_SHORT).show();
                 startDetectArucoActivity();
             }
@@ -134,6 +159,39 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
             default:
                 return constantHeading;
         }
+    }
+
+    private void sendCommand(String cmd) {
+        if (isConnected()) {
+            new Thread(() -> {
+                String command = "http://192.168.4.1/" + cmd;
+                Log.d("Command", command);
+                Request request = new Request.Builder().url(command).build();
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        runOnUiThread(() -> Log.d("Command Response", "Command sent: " + cmd));
+                    } else {
+                        runOnUiThread(() -> Log.d("Command Response", "Failed to send command: " + cmd));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    runOnUiThread(() -> Log.d("Command Response", "IOException: " + e.getMessage()));
+                }
+            }).start();
+        } else {
+            Toast.makeText(this, "No network connection. Command not sent.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            Network network = cm.getActiveNetwork();
+            NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+            return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        }
+        return false;
     }
 
     private void startDetectArucoActivity() {
@@ -173,7 +231,6 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
                 direction = "Unknown";
                 break;
         }
-
         markerInfoTextView.setText("Detected Marker ID: " + markerId + "\nDirection: " + direction);
     }
 }

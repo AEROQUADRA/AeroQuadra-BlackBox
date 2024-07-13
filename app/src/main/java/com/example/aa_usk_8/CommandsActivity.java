@@ -16,7 +16,7 @@ import okhttp3.Response;
 
 public class CommandsActivity extends AppCompatActivity {
 
-    Button btnGreen, btnRed;
+    Button btnForward, btnBackward, btnLeft, btnRight;
     TextView txtResult, txtCommandStatus;
 
     private OkHttpClient client = new OkHttpClient();
@@ -26,63 +26,44 @@ public class CommandsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_commands);
 
-        btnGreen = findViewById(R.id.btnGreen);
-        btnRed = findViewById(R.id.btnRed);
+        btnForward = findViewById(R.id.btnForward);
+        btnBackward = findViewById(R.id.btnBackward);
+        btnLeft = findViewById(R.id.btnLeft);
+        btnRight = findViewById(R.id.btnRight);
         txtResult = findViewById(R.id.txtResult);
         txtCommandStatus = findViewById(R.id.txtCommandStatus);
 
-        btnGreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendCommand("green");
-            }
-        });
-
-        btnRed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendCommand("red");
-            }
-        });
+        btnForward.setOnClickListener(view -> sendCommand("FORWARD"));
+        btnBackward.setOnClickListener(view -> sendCommand("BACKWARD"));
+        btnLeft.setOnClickListener(view -> sendCommand("LEFT"));
+        btnRight.setOnClickListener(view -> sendCommand("RIGHT"));
     }
 
     private void sendCommand(String cmd) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String command = "http://192.168.4.1/" + cmd;
-                Log.d("Command", command);
-                Request request = new Request.Builder().url(command).build();
-                try {
-                    Response response = client.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        final String myResponse = response.body().string();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                txtResult.setText(myResponse);
-                                txtCommandStatus.setText("Command sent: " + cmd);
-                            }
-                        });
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                txtResult.setText("Error: " + response.code());
-                                txtCommandStatus.setText("Failed to send command: " + cmd);
-                            }
-                        });
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            txtResult.setText("IOException: " + e.getMessage());
-                            txtCommandStatus.setText("Failed to send command: " + cmd);
-                        }
+        new Thread(() -> {
+            String command = "http://192.168.4.1/" + cmd;
+            Log.d("Command", command);
+            Request request = new Request.Builder().url(command).build();
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    final String myResponse = response.body().string();
+                    runOnUiThread(() -> {
+                        txtResult.setText(myResponse);
+                        txtCommandStatus.setText("Command sent: " + cmd);
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        txtResult.setText("Error: " + response.code());
+                        txtCommandStatus.setText("Failed to send command: " + cmd);
                     });
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    txtResult.setText("IOException: " + e.getMessage());
+                    txtCommandStatus.setText("Failed to send command: " + cmd);
+                });
             }
         }).start();
     }

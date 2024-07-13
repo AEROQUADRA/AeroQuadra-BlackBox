@@ -25,9 +25,11 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1;
+    private static final String PREFS_NAME = "RobotSettings";
+    private static final String KEY_WHEEL_RPM = "wheelRPM";
 
-    Button btnCommands, btnCalibrate, btnDetectAruco;
-    TextView txtRES, txtSSID, txtIP, txtCalibrationStatus, txtMoveDuration;
+    Button btnCommands, btnCalibrate, btnDetectAruco, btnSettings;
+    TextView txtRES, txtSSID, txtIP, txtCalibrationStatus, txtCurrentMoveDuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +39,12 @@ public class MainActivity extends AppCompatActivity {
         btnCommands = findViewById(R.id.btnCommands);
         btnCalibrate = findViewById(R.id.btnCalibrate);
         btnDetectAruco = findViewById(R.id.btnDetectAruco);
+        btnSettings = findViewById(R.id.btnSettings);
         txtRES = findViewById(R.id.txtRES);
         txtSSID = findViewById(R.id.txtSSID);
         txtIP = findViewById(R.id.txtIP);
         txtCalibrationStatus = findViewById(R.id.txtCalibrationStatus);
-        txtMoveDuration = findViewById(R.id.txtMoveDuration);
+        txtCurrentMoveDuration = findViewById(R.id.txtCurrentMoveDuration);
 
         // Check and display calibration status
         checkCalibrationStatus();
@@ -66,10 +69,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Display current move duration
-        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        int moveDuration = prefs.getInt("moveDuration", 3000);
-        txtMoveDuration.setText("Move Duration: " + moveDuration + " ms");
+        btnSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
+
+        // Display current wheel RPM
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int wheelRPM = prefs.getInt(KEY_WHEEL_RPM, 0);
+        txtCurrentMoveDuration.setText("Current Wheel RPM: " + wheelRPM);
     }
 
     private void checkCalibrationStatus() {
