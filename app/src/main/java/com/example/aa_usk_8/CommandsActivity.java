@@ -16,7 +16,7 @@ import okhttp3.Response;
 
 public class CommandsActivity extends AppCompatActivity {
 
-    Button btnForward, btnBackward, btnLeft, btnRight;
+    Button btnForward, btnBackward, btnLeft, btnRight, btnStop;
     TextView txtResult, txtCommandStatus;
 
     private OkHttpClient client = new OkHttpClient();
@@ -30,6 +30,7 @@ public class CommandsActivity extends AppCompatActivity {
         btnBackward = findViewById(R.id.btnBackward);
         btnLeft = findViewById(R.id.btnLeft);
         btnRight = findViewById(R.id.btnRight);
+        btnStop = findViewById(R.id.btnStop);  // Added STOP button
         txtResult = findViewById(R.id.txtResult);
         txtCommandStatus = findViewById(R.id.txtCommandStatus);
 
@@ -37,6 +38,7 @@ public class CommandsActivity extends AppCompatActivity {
         btnBackward.setOnClickListener(view -> sendCommand("BACKWARD"));
         btnLeft.setOnClickListener(view -> sendCommand("LEFT"));
         btnRight.setOnClickListener(view -> sendCommand("RIGHT"));
+        btnStop.setOnClickListener(view -> sendCommand("STOP"));  // Added STOP button functionality
     }
 
     private void sendCommand(String cmd) {
