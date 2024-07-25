@@ -1,7 +1,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:context=".CommandsActivity">
+
+    <EditText
+        android:id="@+id/editLeftMotorSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Left Motor Speed"
+        android:inputType="number"
+        android:layout_below="@+id/btnForward"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+    <EditText
+        android:id="@+id/editRightMotorSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Right Motor Speed"
+        android:inputType="number"
+        android:layout_below="@+id/editLeftMotorSpeed"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/btnForward"
@@ -16,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Backward"
-        android:layout_below="@id/btnForward"
+        android:layout_below="@+id/btnForward"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
@@ -25,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Left"
-        android:layout_below="@id/btnBackward"
+        android:layout_below="@+id/btnBackward"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
@@ -34,7 +56,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Right"
-        android:layout_below="@id/btnLeft"
+        android:layout_below="@+id/btnLeft"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
@@ -43,16 +65,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stop"
-        android:layout_below="@id/btnRight"
+        android:layout_below="@+id/btnRight"
         android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>  <!-- Added STOP button -->
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/txtResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Result"
-        android:layout_below="@id/btnStop"
+        android:layout_below="@+id/btnStop"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
 
@@ -61,8 +83,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Command Status"
-        android:layout_below="@id/txtResult"
+        android:layout_below="@+id/txtResult"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"/>
-
 </RelativeLayout>

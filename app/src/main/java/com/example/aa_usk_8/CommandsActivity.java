@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import okhttp3.Response;
 public class CommandsActivity extends AppCompatActivity {
 
     Button btnForward, btnBackward, btnLeft, btnRight, btnStop;
+    EditText editLeftMotorSpeed, editRightMotorSpeed;
     TextView txtResult, txtCommandStatus;
 
     private OkHttpClient client = new OkHttpClient();
@@ -30,7 +32,9 @@ public class CommandsActivity extends AppCompatActivity {
         btnBackward = findViewById(R.id.btnBackward);
         btnLeft = findViewById(R.id.btnLeft);
         btnRight = findViewById(R.id.btnRight);
-        btnStop = findViewById(R.id.btnStop);  // Added STOP button
+        btnStop = findViewById(R.id.btnStop);
+        editLeftMotorSpeed = findViewById(R.id.editLeftMotorSpeed);
+        editRightMotorSpeed = findViewById(R.id.editRightMotorSpeed);
         txtResult = findViewById(R.id.txtResult);
         txtCommandStatus = findViewById(R.id.txtCommandStatus);
 
@@ -38,12 +42,15 @@ public class CommandsActivity extends AppCompatActivity {
         btnBackward.setOnClickListener(view -> sendCommand("BACKWARD"));
         btnLeft.setOnClickListener(view -> sendCommand("LEFT"));
         btnRight.setOnClickListener(view -> sendCommand("RIGHT"));
-        btnStop.setOnClickListener(view -> sendCommand("STOP"));  // Added STOP button functionality
+        btnStop.setOnClickListener(view -> sendCommand("STOP"));
     }
 
     private void sendCommand(String cmd) {
         new Thread(() -> {
-            String command = "http://192.168.4.1/" + cmd;
+            String leftSpeed = editLeftMotorSpeed.getText().toString().trim();
+            String rightSpeed = editRightMotorSpeed.getText().toString().trim();
+
+            String command = "http://192.168.4.1/" + cmd + "?leftSpeed=" + leftSpeed + "&rightSpeed=" + rightSpeed;
             Log.d("Command", command);
             Request request = new Request.Builder().url(command).build();
             try {

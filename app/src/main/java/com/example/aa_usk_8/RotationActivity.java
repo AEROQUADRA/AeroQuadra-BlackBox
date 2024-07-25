@@ -6,9 +6,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -24,18 +21,18 @@ import okhttp3.Response;
 
 public class RotationActivity extends AppCompatActivity implements SensorEventListener {
 
+    private static final String PREFS_NAME = "RotationActivityPrefs";
+    private static final String KEY_CONSTANT_HEADING = "constantHeading";
     private SensorManager sensorManager;
     private Sensor rotationVectorSensor;
-    private TextView realTimeHeadingTextView, constantHeadingTextView, markerInfoTextView;
+    private TextView realTimeHeadingTextView, constantHeadingTextView, markerInfoTextView, statusTextView;
+    private OkHttpClient client = new OkHttpClient();
 
     private long lastDetectionTime = 0;
     private static final long MIN_DETECT_INTERVAL_MS = 1000 / 30;
-    private float initialAzimuth = -1; // Set initial value to -1 to indicate it hasn't been set
     private boolean rotationComplete = false;
 
     private int detectedMarkerId;
-
-    private OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +42,7 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
         realTimeHeadingTextView = findViewById(R.id.headingTextView);
         constantHeadingTextView = findViewById(R.id.constantHeadingTextView);
         markerInfoTextView = findViewById(R.id.markerInfoTextView);
+        statusTextView = findViewById(R.id.statusTextView);
 
         detectedMarkerId = getIntent().getIntExtra("detectedMarkerId", -1);
 
@@ -105,29 +103,26 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
             final String realTimeHeading = "Real-Time Heading: " + Math.round(azimuth) + "°";
             runOnUiThread(() -> realTimeHeadingTextView.setText(realTimeHeading));
 
-            if (initialAzimuth == -1) {
-                initialAzimuth = azimuth;
-                final String constantHeading = "Constant Heading: " + Math.round(initialAzimuth) + "°";
-                runOnUiThread(() -> constantHeadingTextView.setText(constantHeading));
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            float constantHeading = prefs.getFloat(KEY_CONSTANT_HEADING, -1);
 
-                // Determine rotation direction and send command
-                float requiredHeading = calculateRequiredHeading(detectedMarkerId);
-                if (Math.abs(requiredHeading - initialAzimuth) > 180) {
-                    requiredHeading = (requiredHeading + 360) % 360;
-                }
-                if (requiredHeading > initialAzimuth) {
-                    sendCommand("RIGHT");
-                } else {
-                    sendCommand("LEFT");
-                }
+            if (constantHeading == -1) {
+                // Constant heading is not set, set it now
+                constantHeading = azimuth;
+                prefs.edit().putFloat(KEY_CONSTANT_HEADING, constantHeading).apply();
+                final String constantHeadingStr = "Constant Heading: " + Math.round(constantHeading) + "°";
+                runOnUiThread(() -> constantHeadingTextView.setText(constantHeadingStr));
+            } else {
+                final String constantHeadingStr = "Constant Heading: " + Math.round(constantHeading) + "°";
+                runOnUiThread(() -> constantHeadingTextView.setText(constantHeadingStr));
             }
 
-            float requiredHeading = calculateRequiredHeading(detectedMarkerId);
+            float requiredHeading = calculateRequiredHeading(constantHeading, detectedMarkerId);
 
             if (Math.abs(azimuth - requiredHeading) <= 5 && !rotationComplete) {
                 rotationComplete = true;
-                sendCommand("STOP");
                 Toast.makeText(this, "Heading aligned. Moving to DetectArucoActivity.", Toast.LENGTH_SHORT).show();
+                sendCommand("STOP"); // Send STOP command
                 startDetectArucoActivity();
             }
         }
@@ -137,8 +132,7 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-    private float calculateRequiredHeading(int markerId) {
-        float constantHeading = initialAzimuth;
+    private float calculateRequiredHeading(float constantHeading, int markerId) {
         switch (markerId) {
             case 1:
                 return (constantHeading + 90) % 360;
@@ -159,39 +153,6 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
             default:
                 return constantHeading;
         }
-    }
-
-    private void sendCommand(String cmd) {
-        if (isConnected()) {
-            new Thread(() -> {
-                String command = "http://192.168.4.1/" + cmd;
-                Log.d("Command", command);
-                Request request = new Request.Builder().url(command).build();
-                try {
-                    Response response = client.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        runOnUiThread(() -> Log.d("Command Response", "Command sent: " + cmd));
-                    } else {
-                        runOnUiThread(() -> Log.d("Command Response", "Failed to send command: " + cmd));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    runOnUiThread(() -> Log.d("Command Response", "IOException: " + e.getMessage()));
-                }
-            }).start();
-        } else {
-            Toast.makeText(this, "No network connection. Command not sent.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        if (cm != null) {
-            Network network = cm.getActiveNetwork();
-            NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
-            return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-        }
-        return false;
     }
 
     private void startDetectArucoActivity() {
@@ -232,5 +193,24 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
                 break;
         }
         markerInfoTextView.setText("Detected Marker ID: " + markerId + "\nDirection: " + direction);
+    }
+
+    private void sendCommand(String cmd) {
+        new Thread(() -> {
+            String command = "http://192.168.4.1/" + cmd;
+            Log.d("Command", command);
+            Request request = new Request.Builder().url(command).build();
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    runOnUiThread(() -> statusTextView.setText("Command sent: " + cmd));
+                } else {
+                    runOnUiThread(() -> statusTextView.setText("Failed to send command: " + cmd));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> statusTextView.setText("IOException: " + e.getMessage()));
+            }
+        }).start();
     }
 }

@@ -9,16 +9,19 @@ const char* password = "12345678";
 // WiFi server on port 80
 WiFiServer server(80);
 
-// L298N motor driver connections
-#define IN1 4  // GPIO4 (D2)
-#define IN2 0  // GPIO0 (D3)
-#define IN3 16 // GPIO16 (D0)
-#define IN4 5  // GPIO5 (D1)
-#define ENA 14 // GPIO14 (D5)
-#define ENB 2  // GPIO2 (D4)
+// TB6612FNG motor driver connections
+#define ENA 5 
+#define ENB 14  
+
+#define IN1 2  
+#define IN2 16
+
+#define IN3 0  
+#define IN4 4  
 
 // Motor speed (0-255)
-int motorSpeed = 200;
+int leftMotorSpeed = 100;
+int rightMotorSpeed = 100;
 
 void setup() {
   // Initialize serial communication
@@ -66,30 +69,33 @@ void loop() {
 
           Serial.println(command);
 
+          // Parse motor speeds
+          parseMotorSpeeds(command);
+
           // Default message when the command does not match any LED
           all_command = command + " is on";
 
-          if (command.equals("FORWARD")) {
+          if (command.startsWith("FORWARD")) {
             moveForward();
             all_command = "FORWARD move server";
           }
 
-          if (command.equals("BACKWARD")) {
+          if (command.startsWith("BACKWARD")) {
             moveBackward();
             all_command = "BACKWARD move server";
           }
 
-          if (command.equals("LEFT")) {
+          if (command.startsWith("LEFT")) {
             rotateLeft();
             all_command = "LEFT move server";
           }
 
-          if (command.equals("RIGHT")) {
+          if (command.startsWith("RIGHT")) {
             rotateRight();
             all_command = "RIGHT move server";
           }
 
-          if (command.equals("STOP")) {
+          if (command.startsWith("STOP")) {
             forceStop();
             all_command = "STOP move server";
           }
@@ -108,14 +114,26 @@ void loop() {
   }
 }
 
+// Function to parse motor speeds from command
+void parseMotorSpeeds(String command) {
+  int leftSpeedIndex = command.indexOf("leftSpeed=") + 10;
+  int rightSpeedIndex = command.indexOf("rightSpeed=") + 11;
+
+  if (leftSpeedIndex > 9 && rightSpeedIndex > 10) {
+    int ampersandIndex = command.indexOf("&", leftSpeedIndex);
+    leftMotorSpeed = command.substring(leftSpeedIndex, ampersandIndex).toInt();
+    rightMotorSpeed = command.substring(rightSpeedIndex).toInt();
+  }
+}
+
 // Function to move the robot forward
 void moveForward() {
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
-  analogWrite(ENA, motorSpeed);  // Set speed
-  analogWrite(ENB, motorSpeed);  // Set speed
+  analogWrite(ENA, leftMotorSpeed);  // Set left motor speed
+  analogWrite(ENB, rightMotorSpeed);  // Set right motor speed
 }
 
 // Function to move the robot backward
@@ -124,8 +142,8 @@ void moveBackward() {
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
-  analogWrite(ENA, motorSpeed);  // Set speed
-  analogWrite(ENB, motorSpeed);  // Set speed
+  analogWrite(ENA, leftMotorSpeed);  // Set left motor speed
+  analogWrite(ENB, rightMotorSpeed);  // Set right motor speed
 }
 
 // Function to rotate the robot left
@@ -134,8 +152,8 @@ void rotateLeft() {
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
-  analogWrite(ENA, motorSpeed);  // Set speed
-  analogWrite(ENB, motorSpeed);  // Set speed
+  analogWrite(ENA, leftMotorSpeed);  // Set left motor speed
+  analogWrite(ENB, rightMotorSpeed);  // Set right motor speed
 }
 
 // Function to rotate the robot right
@@ -144,8 +162,8 @@ void rotateRight() {
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
-  analogWrite(ENA, motorSpeed);  // Set speed
-  analogWrite(ENB, motorSpeed);  // Set speed
+  analogWrite(ENA, leftMotorSpeed);  // Set left motor speed
+  analogWrite(ENB, rightMotorSpeed);  // Set right motor speed
 }
 
 // Function to stop the robot

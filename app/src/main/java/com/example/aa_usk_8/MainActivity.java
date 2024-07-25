@@ -25,7 +25,9 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1;
-    private static final String PREFS_NAME = "RobotSettings";
+    private static final String PREFS_NAME = "RotationActivityPrefs";
+    private static final String KEY_CONSTANT_HEADING = "constantHeading";
+    private static final String PREFS_ROBOT_SETTINGS = "RobotSettings";
     private static final String KEY_WHEEL_RPM = "wheelRPM";
 
     Button btnCommands, btnCalibrate, btnDetectAruco, btnSettings;
@@ -35,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Clear constant heading
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        prefs.edit().remove(KEY_CONSTANT_HEADING).apply();
 
         btnCommands = findViewById(R.id.btnCommands);
         btnCalibrate = findViewById(R.id.btnCalibrate);
@@ -75,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Display current wheel RPM
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int wheelRPM = prefs.getInt(KEY_WHEEL_RPM, 0);
+        SharedPreferences robotPrefs = getSharedPreferences(PREFS_ROBOT_SETTINGS, MODE_PRIVATE);
+        int wheelRPM = robotPrefs.getInt(KEY_WHEEL_RPM, 0);
         txtCurrentMoveDuration.setText("Current Wheel RPM: " + wheelRPM);
     }
 
