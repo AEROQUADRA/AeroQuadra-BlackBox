@@ -21,7 +21,10 @@ import okhttp3.Response;
 
 public class MoveActivity extends AppCompatActivity {
 
-    private TextView countdownTextView, statusTextView, distanceTextView;
+    private static final String PREFS_NAME = "RobotSettings";
+    private static final String KEY_WHEEL_RPM = "wheelRPM";
+
+    private TextView countdownTextView, statusTextView, distanceTextView, debugTextView, detailsTextView;
     private OkHttpClient client = new OkHttpClient();
     private int detectedMarkerId;
     private double distanceToMarker;
@@ -34,6 +37,8 @@ public class MoveActivity extends AppCompatActivity {
         countdownTextView = findViewById(R.id.countdownTextView);
         statusTextView = findViewById(R.id.statusTextView);
         distanceTextView = findViewById(R.id.distanceTextView);
+        debugTextView = findViewById(R.id.debugTextView);
+        detailsTextView = findViewById(R.id.detailsTextView);
 
         detectedMarkerId = getIntent().getIntExtra("detectedMarkerId", -1);
         distanceToMarker = getIntent().getDoubleExtra("distanceToMarker", 0.0);
@@ -56,12 +61,16 @@ public class MoveActivity extends AppCompatActivity {
 
         int moveDuration = calculateMoveDuration(distanceToMarker);
 
+        // Display the calculated move duration
+        debugTextView.setText(String.format("Move Duration: %d ms", moveDuration));
+
         startMove(moveDuration);
     }
 
     private int calculateMoveDuration(double distance) {
-        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        int wheelRPM = prefs.getInt("wheelRPM", 60); // Default RPM
+        // Retrieve the wheel RPM from SharedPreferences
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int wheelRPM = prefs.getInt(KEY_WHEEL_RPM, 60); // Default RPM if not set
 
         // Wheel specifications
         double wheelDiameter = 43; // mm
@@ -70,9 +79,25 @@ public class MoveActivity extends AppCompatActivity {
         // Convert distance from cm to mm
         double distanceInMm = distance * 10;
 
-        // Calculate the duration
+        // Calculate the number of revolutions needed
         double wheelRevolutions = distanceInMm / wheelCircumference;
+
+        // Calculate the time per revolution
         double wheelRevolutionTime = 60.0 / wheelRPM; // Time for one revolution in seconds
+
+        // Log debug information
+        Log.d("DEBUG", String.format("Distance in mm: %.2f", distanceInMm));
+        Log.d("DEBUG", String.format("Wheel Circumference: %.2f", wheelCircumference));
+        Log.d("DEBUG", String.format("Wheel Revolutions: %.2f", wheelRevolutions));
+        Log.d("DEBUG", String.format("Wheel Revolution Time: %.2f seconds", wheelRevolutionTime));
+        Log.d("DEBUG", String.format("Wheel RPM: %d", wheelRPM));
+
+        // Display calculation details on the screen
+        detailsTextView.setText(
+                String.format("RPM: %d\nDiameter: %.2f mm\nCircumference: %.2f mm\nDistance in mm: %.2f\nRevolutions: %.2f\nTime per revolution: %.2f s",
+                        wheelRPM, wheelDiameter, wheelCircumference, distanceInMm, wheelRevolutions, wheelRevolutionTime));
+
+        // Calculate and return the total duration in milliseconds
         return (int) (wheelRevolutions * wheelRevolutionTime * 1000); // Convert to milliseconds
     }
 

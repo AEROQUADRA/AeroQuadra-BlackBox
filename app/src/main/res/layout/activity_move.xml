@@ -30,4 +30,26 @@
         android:layout_below="@id/statusTextView"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/debugTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Debug Info"
+        android:textSize="14sp"
+        android:layout_below="@id/distanceTextView"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/holo_red_dark" />
+
+    <TextView
+        android:id="@+id/detailsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Calculation Details"
+        android:textSize="14sp"
+        android:layout_below="@id/debugTextView"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/holo_blue_dark" />
 </RelativeLayout>
