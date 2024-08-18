@@ -1,7 +1,7 @@
 
 # PathFinder
 
-PathFinder is an Android application developed by AeroQuadra to provide seamless navigation using ArUco markers. The app is designed to detect ArUco markers, navigate to their location, and orient itself accordingly. The project includes both an Android application and an ESP8266-based hardware setup to control motors.
+PathFinder is an advanced navigation application that leverages computer vision to detect ArUco markers and seamlessly control a robot's movement and orientation. This Android-based application processes real-time video feeds to identify ArUco markers, accurately calculate their distance, and then transmit precise movement commands to the robot. The robot's onboard computer, powered by an ESP8266 microcontroller, interprets these commands, ensuring smooth and responsive navigation.
 
 ## Table of Contents
 - [Introduction](#introduction)
