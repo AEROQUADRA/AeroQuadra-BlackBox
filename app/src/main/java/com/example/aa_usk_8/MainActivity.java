@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_WHEEL_RPM = "wheelRPM";
 
     Button btnCommands, btnCalibrate, btnDetectAruco, btnSettings;
-    TextView txtRES, txtSSID, txtIP, txtCalibrationStatus, txtCurrentMoveDuration;
+    TextView txtRES, txtSSID, txtIP, txtCalibrationStatus, txtCurrentMoveDuration, txtVersion;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Check and display calibration status
         checkCalibrationStatus();
+
+        // Set the version number
+        txtVersion = findViewById(R.id.txtVersion);
+        String versionName = BuildConfig.VERSION_NAME;
+        txtVersion.setText("Version: " + versionName);
 
         // Request necessary permissions
         if (checkAndRequestPermissions()) {

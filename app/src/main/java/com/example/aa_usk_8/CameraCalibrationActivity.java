@@ -31,7 +31,8 @@ public class CameraCalibrationActivity extends CameraActivity implements CameraB
     private static final String TAG = "CameraCalibActivity";
     private static final int CHESSBOARD_WIDTH = 9;
     private static final int CHESSBOARD_HEIGHT = 6;
-    private static final int CALIBRATION_IMAGES_REQUIRED = 10;
+    private static final int CALIBRATION_IMAGES_REQUIRED = 50;
+    private static final double SQUARE_SIZE = 0.024; // Size of the chessboard square in meters (24mm for A4)
 
     private Mat mRgba;
     private Mat mGray;
@@ -39,6 +40,7 @@ public class CameraCalibrationActivity extends CameraActivity implements CameraB
     private List<Mat> imagePoints = new ArrayList<>();
     private List<Mat> objectPoints = new ArrayList<>();
     private Size patternSize = new Size(CHESSBOARD_WIDTH, CHESSBOARD_HEIGHT);
+    private MatOfPoint3f objectCorners; // 3D points of the checkerboard squares
 
     private TextView txtProgress;
 
@@ -62,6 +64,14 @@ public class CameraCalibrationActivity extends CameraActivity implements CameraB
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         txtProgress = findViewById(R.id.txtProgress);
+
+        // Initialize object points once (3D points for the checkerboard)
+        objectCorners = new MatOfPoint3f();
+        for (int i = 0; i < CHESSBOARD_HEIGHT; i++) {
+            for (int j = 0; j < CHESSBOARD_WIDTH; j++) {
+                objectCorners.push_back(new MatOfPoint3f(new Point3(j * SQUARE_SIZE, i * SQUARE_SIZE, 0)));
+            }
+        }
     }
 
     @Override
@@ -111,18 +121,17 @@ public class CameraCalibrationActivity extends CameraActivity implements CameraB
         boolean found = Calib3d.findChessboardCorners(mGray, patternSize, corners);
 
         if (found) {
+            // Refine corner locations for sub-pixel accuracy
+            Imgproc.cornerSubPix(mGray, corners, new Size(11, 11), new Size(-1, -1),
+                    new org.opencv.core.TermCriteria(org.opencv.core.TermCriteria.EPS + org.opencv.core.TermCriteria.COUNT, 30, 0.1));
+
             Calib3d.drawChessboardCorners(mRgba, patternSize, corners, found);
             imagePoints.add(corners);
 
-            MatOfPoint3f obj = new MatOfPoint3f();
-            for (int i = 0; i < CHESSBOARD_HEIGHT; i++) {
-                for (int j = 0; j < CHESSBOARD_WIDTH; j++) {
-                    obj.push_back(new MatOfPoint3f(new Point3(j, i, 0.0f)));
-                }
-            }
-            objectPoints.add(obj);
+            // Use the precomputed object points
+            objectPoints.add(objectCorners);
 
-            // Update the progress
+            // Update progress
             runOnUiThread(() -> txtProgress.setText(String.format("Calibration Progress: %d/%d", imagePoints.size(), CALIBRATION_IMAGES_REQUIRED)));
 
             // If enough images are captured, calibrate the camera
@@ -135,12 +144,18 @@ public class CameraCalibrationActivity extends CameraActivity implements CameraB
     }
 
     private void calibrateCamera() {
-        Mat cameraMatrix = new Mat();
-        Mat distCoeffs = new Mat();
+        Mat cameraMatrix = Mat.eye(3, 3, CvType.CV_64F);
+        Mat distCoeffs = Mat.zeros(8, 1, CvType.CV_64F);
         List<Mat> rvecs = new ArrayList<>();
         List<Mat> tvecs = new ArrayList<>();
 
-        Calib3d.calibrateCamera(objectPoints, imagePoints, patternSize, cameraMatrix, distCoeffs, rvecs, tvecs);
+        Size imageSize = new Size(mGray.width(), mGray.height());
+
+        // Calibrate the camera
+        double rms = Calib3d.calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs, rvecs, tvecs);
+
+        // Log the reprojection error
+        Log.i(TAG, "Calibration reprojection error (RMS): " + rms);
 
         // Save the calibration data
         saveCalibrationData(cameraMatrix, distCoeffs);
