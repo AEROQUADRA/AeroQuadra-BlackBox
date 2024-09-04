@@ -39,11 +39,21 @@
         android:layout_below="@id/markerInfoTextView"
         android:layout_marginTop="16dp" />
 
+    <!-- New TextView for Heading Difference -->
+    <TextView
+        android:id="@+id/headingDifferenceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Heading Difference"
+        android:textSize="18sp"
+        android:layout_below="@id/statusTextView"
+        android:layout_marginTop="16dp" />
+
     <Button
         android:id="@+id/restartButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/statusTextView"
+        android:layout_below="@id/headingDifferenceTextView"
         android:layout_marginTop="32dp"
         android:text="Restart"
         android:onClick="restartMainActivity" />
