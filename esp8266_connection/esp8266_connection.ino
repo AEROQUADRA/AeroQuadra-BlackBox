@@ -180,12 +180,12 @@ void stopMotors() {
 void forceStop() {
   // Short pulses to quickly stop
   moveForward();
-  delay(100);
+  delay(7);
   moveBackward();
-  delay(100);
+  delay(7);
   moveForward();
-  delay(100);
+  delay(7);
   moveBackward();
-  delay(100);
+  delay(7);
   stopMotors();
 }

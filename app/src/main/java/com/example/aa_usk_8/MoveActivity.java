@@ -51,7 +51,7 @@ public class MoveActivity extends AppCompatActivity {
         }
 
         if (detectedMarkerId == 0) {
-            sendCommand("STOP");
+            sendCommand("STOP", 0, 0);
             startProgramEndsActivity();
             return;
         }
@@ -103,7 +103,13 @@ public class MoveActivity extends AppCompatActivity {
 
     private void startMove(int duration) {
         if (isConnected()) {
-            sendCommand("FORWARD");
+            // Get move powers from SharedPreferences
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            int leftPower = prefs.getInt("moveLeftPower", 75);  // Default to 75 if not set
+            int rightPower = prefs.getInt("moveRightPower", 75);  // Default to 75 if not set
+
+            sendCommand("FORWARD", leftPower, rightPower);  // Send move command with powers
+
             new CountDownTimer(duration, 100) {
 
                 public void onTick(long millisUntilFinished) {
@@ -111,7 +117,7 @@ public class MoveActivity extends AppCompatActivity {
                 }
 
                 public void onFinish() {
-                    sendCommand("STOP");
+                    sendCommand("STOP", 0, 0);
                     startRotationActivity();
                 }
             }.start();
@@ -133,9 +139,9 @@ public class MoveActivity extends AppCompatActivity {
         finish();
     }
 
-    private void sendCommand(String cmd) {
+    private void sendCommand(String cmd, int leftPower, int rightPower) {
         new Thread(() -> {
-            String command = "http://192.168.4.1/" + cmd;
+            String command = "http://192.168.4.1/" + cmd + "?leftSpeed=" + leftPower + "&rightSpeed=" + rightPower;
             Log.d("Command", command);
             Request request = new Request.Builder().url(command).build();
             try {

@@ -1,101 +1,88 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context=".CommandsActivity">
+>
 
-    <!-- Left Motor Speed Input -->
-    <EditText
-        android:id="@+id/editLeftMotorSpeed"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Left Motor Speed"
-        android:inputType="number"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        android:padding="16dp">
 
-    <!-- Right Motor Speed Input -->
-    <EditText
-        android:id="@+id/editRightMotorSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Right Motor Speed"
-        android:inputType="number"
-        android:layout_below="@+id/editLeftMotorSpeed"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        <!-- Forward Button -->
+        <Button
+            android:id="@+id/btnForward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Forward"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp"/>
 
-    <!-- Forward Button -->
-    <Button
-        android:id="@+id/btnForward"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Forward"
-        android:layout_below="@+id/editRightMotorSpeed"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp"/>
+        <!-- Left Button -->
+        <Button
+            android:id="@+id/btnLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Left"
+            android:layout_below="@+id/btnForward"
+            android:layout_toLeftOf="@+id/btnStop"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"/>
 
-    <!-- Left Button -->
-    <Button
-        android:id="@+id/btnLeft"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Left"
-        android:layout_below="@+id/btnForward"
-        android:layout_toLeftOf="@+id/btnStop"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"/>
+        <!-- Stop Button -->
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop"
+            android:layout_below="@+id/btnForward"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"/>
 
-    <!-- Stop Button -->
-    <Button
-        android:id="@+id/btnStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stop"
-        android:layout_below="@+id/btnForward"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        <!-- Right Button -->
+        <Button
+            android:id="@+id/btnRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Right"
+            android:layout_below="@+id/btnForward"
+            android:layout_toRightOf="@+id/btnStop"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"/>
 
-    <!-- Right Button -->
-    <Button
-        android:id="@+id/btnRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Right"
-        android:layout_below="@+id/btnForward"
-        android:layout_toRightOf="@+id/btnStop"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
+        <!-- Backward Button -->
+        <Button
+            android:id="@+id/btnBackward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Backward"
+            android:layout_below="@+id/btnStop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"/>
 
-    <!-- Backward Button -->
-    <Button
-        android:id="@+id/btnBackward"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Backward"
-        android:layout_below="@+id/btnStop"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        <!-- Result TextView -->
+        <TextView
+            android:id="@+id/txtResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Result"
+            android:textSize="16sp"
+            android:layout_below="@+id/btnBackward"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
 
-    <!-- Result TextView -->
-    <TextView
-        android:id="@+id/txtResult"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Result"
-        android:layout_below="@+id/btnBackward"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        <!-- Command Status TextView -->
+        <TextView
+            android:id="@+id/txtCommandStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Command Status"
+            android:textSize="16sp"
+            android:layout_below="@+id/txtResult"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
 
-    <!-- Command Status TextView -->
-    <TextView
-        android:id="@+id/txtCommandStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Command Status"
-        android:layout_below="@+id/txtResult"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
-</RelativeLayout>
+    </RelativeLayout>
+
+</ScrollView>

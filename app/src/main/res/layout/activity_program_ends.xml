@@ -1,24 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <TextView
-        android:id="@+id/text_program_ends"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Program Ends"
-        android:textSize="24sp" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="16dp">
 
-    <Button
-        android:id="@+id/btn_restart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Restart"
-        android:layout_below="@id/text_program_ends"
-        android:layout_marginTop="24dp"
-        android:onClick="restartMainActivity" />
+        <TextView
+            android:id="@+id/text_program_ends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Program Ends"
+            android:textSize="24sp"
+            android:layout_gravity="center" />
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/btn_restart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Restart"
+            android:layout_marginTop="24dp"
+            android:onClick="restartMainActivity"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
+</ScrollView>

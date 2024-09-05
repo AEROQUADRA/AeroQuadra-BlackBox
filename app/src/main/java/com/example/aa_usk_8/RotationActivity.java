@@ -20,8 +20,11 @@ import okhttp3.Response;
 
 public class RotationActivity extends AppCompatActivity implements SensorEventListener {
 
-    private static final String PREFS_NAME = "RotationActivityPrefs";
+    private static final String PREFS_NAME = "RobotSettings";  // Changed to "RobotSettings" to match with other activities
     private static final String KEY_CONSTANT_HEADING = "constantHeading";
+    private static final String KEY_ROTATE_LEFT_POWER = "rotateLeftPower";
+    private static final String KEY_ROTATE_RIGHT_POWER = "rotateRightPower";
+
     private SensorManager sensorManager;
     private Sensor rotationVectorSensor;
     private TextView realTimeHeadingTextView, constantHeadingTextView, markerInfoTextView, statusTextView, headingDifferenceTextView;
@@ -145,7 +148,7 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
             if (Math.abs(headingDifference) <= 5 && !rotationComplete) {
                 // If aligned, stop the rotation
                 rotationComplete = true;
-                sendCommand("STOP");
+                sendCommand("STOP", 0, 0);
                 Toast.makeText(this, "Heading aligned with marker.", Toast.LENGTH_SHORT).show();
 
                 // Reset direction flags
@@ -155,6 +158,10 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
                 // Proceed to the next step or activity
                 proceedToNextStep();
             } else if (!rotationComplete) {
+                // Retrieve rotation powers from SharedPreferences
+                int rotateLeftPower = prefs.getInt(KEY_ROTATE_LEFT_POWER, 75);  // Default to 75 if not set
+                int rotateRightPower = prefs.getInt(KEY_ROTATE_RIGHT_POWER, 75);  // Default to 75 if not set
+
                 // Determine and lock the direction (only choose once)
                 if (!rotatingRight && !rotatingLeft) {
                     if (headingDifference > 0) {
@@ -168,9 +175,9 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
 
                 // Continue rotating in the chosen direction
                 if (rotatingRight) {
-                    sendCommand("RIGHT");
+                    sendCommand("RIGHT", rotateLeftPower, rotateRightPower);
                 } else if (rotatingLeft) {
-                    sendCommand("LEFT");
+                    sendCommand("LEFT", rotateLeftPower, rotateRightPower);
                 }
             }
         }
@@ -245,9 +252,9 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
         markerInfoTextView.setText("Detected Marker ID: " + markerId + "\nDirection: " + direction);
     }
 
-    private void sendCommand(String cmd) {
+    private void sendCommand(String cmd, int leftPower, int rightPower) {
         new Thread(() -> {
-            String command = "http://192.168.4.1/" + cmd;
+            String command = "http://192.168.4.1/" + cmd + "?leftSpeed=" + leftPower + "&rightSpeed=" + rightPower;
             Request request = new Request.Builder().url(command).build();
             try {
                 Response response = client.newCall(request).execute();

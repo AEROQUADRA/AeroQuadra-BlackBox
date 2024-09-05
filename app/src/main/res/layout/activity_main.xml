@@ -1,93 +1,99 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/btnCommands"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Commands"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnCalibrate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Calibrate Camera"
-        android:layout_below="@id/btnCommands"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        <Button
+            android:id="@+id/btnCommands"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Commands"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"/>
 
-    <Button
-        android:id="@+id/btnDetectAruco"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Detect ArUco"
-        android:layout_below="@id/btnCalibrate"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        <Button
+            android:id="@+id/btnCalibrate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calibrate Camera"
+            android:layout_below="@id/btnCommands"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
 
-    <Button
-        android:id="@+id/btnSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Settings"
-        android:layout_below="@id/btnDetectAruco"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        <Button
+            android:id="@+id/btnDetectAruco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Detect ArUco"
+            android:layout_below="@id/btnCalibrate"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:id="@+id/txtRES"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Response:"
-        android:layout_below="@id/btnSettings"
-        android:layout_marginTop="24dp"
-        android:layout_centerHorizontal="true"/>
+        <Button
+            android:id="@+id/btnSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:layout_below="@id/btnDetectAruco"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:id="@+id/txtSSID"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SSID:"
-        android:layout_below="@id/txtRES"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:id="@+id/txtRES"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Response:"
+            android:layout_below="@id/btnSettings"
+            android:layout_marginTop="24dp"
+            android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:id="@+id/txtIP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="IP:"
-        android:layout_below="@id/txtSSID"
-        android:layout_marginTop="8dp"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:id="@+id/txtSSID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SSID:"
+            android:layout_below="@id/txtRES"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:id="@+id/txtCalibrationStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Calibration Status: Unknown"
-        android:layout_below="@id/txtIP"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:id="@+id/txtIP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP:"
+            android:layout_below="@id/txtSSID"
+            android:layout_marginTop="8dp"
+            android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:id="@+id/txtCurrentMoveDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Current Wheel RPM:"
-        android:layout_below="@id/txtCalibrationStatus"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:id="@+id/txtCalibrationStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calibration Status: Unknown"
+            android:layout_below="@id/txtIP"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
 
-    <TextView
-        android:id="@+id/txtVersion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Version"
-        android:layout_below="@id/txtCurrentMoveDuration"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
-</RelativeLayout>
+        <TextView
+            android:id="@+id/txtCurrentMoveDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Wheel RPM:"
+            android:layout_below="@id/txtCalibrationStatus"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/txtVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Version"
+            android:layout_below="@id/txtCurrentMoveDuration"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+</ScrollView>

@@ -1,41 +1,174 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/editTextWheelRPM"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Wheel RPM"
-        android:inputType="number"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"/>
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnSaveRPM"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save RPM"
-        android:layout_below="@id/editTextWheelRPM"
-        android:layout_centerHorizontal="true"/>
+        <!-- Wheel RPM Input with Label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
 
-    <!-- New Scaling Factor Input -->
-    <EditText
-        android:id="@+id/editTextScalingFactor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Scaling Factor"
-        android:inputType="numberDecimal"
-        android:layout_below="@id/btnSaveRPM"
-        android:layout_marginTop="24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wheel RPM"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical" />
 
-    <Button
-        android:id="@+id/btnSaveScalingFactor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save Scaling Factor"
-        android:layout_below="@id/editTextScalingFactor"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
-</RelativeLayout>
+            <EditText
+                android:id="@+id/editTextWheelRPM"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter Wheel RPM"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSaveRPM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save RPM"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Scaling Factor Input with Label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scaling Factor"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/editTextScalingFactor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter Scaling Factor"
+                android:inputType="numberDecimal"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSaveScalingFactor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save Scaling Factor"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Rotate Left Power Input with Label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rotate Left Power"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/editTextRotateLeftPower"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter Rotate Left Power"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <!-- Rotate Right Power Input with Label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rotate Right Power"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/editTextRotateRightPower"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter Rotate Right Power"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <!-- Move Left Power Input with Label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Move Left Power"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/editTextMoveLeftPower"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter Move Left Power"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <!-- Move Right Power Input with Label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Move Right Power"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/editTextMoveRightPower"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter Move Right Power"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSavePowers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save Powers"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"/>
+
+    </LinearLayout>
+</ScrollView>
