@@ -117,7 +117,6 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
             float constantHeading = prefs.getFloat(KEY_CONSTANT_HEADING, -1);
 
             if (constantHeading == -1) {
-                // If constant heading is not set, set it to the current azimuth
                 constantHeading = azimuth;
                 prefs.edit().putFloat(KEY_CONSTANT_HEADING, constantHeading).apply();
                 final String constantHeadingStr = "Constant Heading: " + Math.round(constantHeading) + "°";
@@ -191,25 +190,26 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
     private float calculateRequiredHeading(float constantHeading, int markerId) {
         switch (markerId) {
             case 1: // East
-                return (constantHeading + 90) % 360;
+                return constantHeading % 360; // East is constantHeading
             case 2: // South-East
-                return (constantHeading + 135) % 360;
-            case 3: // South
-                return (constantHeading + 180) % 360;
-            case 4: // South-West
-                return (constantHeading + 225) % 360;
-            case 5: // West
-                return (constantHeading + 270) % 360;
-            case 6: // North-West
-                return (constantHeading + 315) % 360;
-            case 7: // North
-                return constantHeading % 360; // This is the constant heading itself
-            case 8: // North-East
                 return (constantHeading + 45) % 360;
+            case 3: // South
+                return (constantHeading + 90) % 360;
+            case 4: // South-West
+                return (constantHeading + 135) % 360;
+            case 5: // West
+                return (constantHeading + 180) % 360;
+            case 6: // North-West
+                return (constantHeading + 225) % 360;
+            case 7: // North
+                return (constantHeading + 270) % 360;
+            case 8: // North-East
+                return (constantHeading + 315) % 360;
             default:
                 return constantHeading; // Default to constant heading if marker ID is unknown
         }
     }
+
 
     private void proceedToNextStep() {
         // Move to the next activity or restart the detection process

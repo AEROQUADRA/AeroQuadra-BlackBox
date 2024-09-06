@@ -41,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Clear constant heading
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        prefs.edit().remove(KEY_CONSTANT_HEADING).apply();
+        prefs.edit().remove(KEY_CONSTANT_HEADING).apply(); // Clear the constant heading on restart
+
+
 
         btnCommands = findViewById(R.id.btnCommands);
         btnCalibrate = findViewById(R.id.btnCalibrate);
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         txtIP = findViewById(R.id.txtIP);
         txtCalibrationStatus = findViewById(R.id.txtCalibrationStatus);
         txtCurrentMoveDuration = findViewById(R.id.txtCurrentMoveDuration);
+
+
 
         // Check and display calibration status
         checkCalibrationStatus();
@@ -158,6 +162,13 @@ public class MainActivity extends AppCompatActivity {
                 txtIP.setText("IP: " + ip);
             });
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences robotPrefs = getSharedPreferences("RobotSettings", MODE_PRIVATE);
+        robotPrefs.edit().remove(KEY_CONSTANT_HEADING).apply(); // Clear the constant heading every time MainActivity resumes
     }
 
     @Override
