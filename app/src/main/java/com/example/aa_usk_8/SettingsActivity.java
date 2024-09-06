@@ -50,7 +50,7 @@ public class SettingsActivity extends AppCompatActivity {
         int rotateRightPower = prefs.getInt(KEY_ROTATE_RIGHT_POWER, 75);
         int moveLeftPower = prefs.getInt(KEY_MOVE_LEFT_POWER, 75);
         int moveRightPower = prefs.getInt(KEY_MOVE_RIGHT_POWER, 75);
-        float headingAdjustmentFactor = prefs.getFloat(KEY_HEADING_ADJUSTMENT_FACTOR, 1.0f);
+        float headingAdjustmentFactor = prefs.getFloat(KEY_HEADING_ADJUSTMENT_FACTOR, 30);
 
         // Set saved values to input fields
         editTextWheelRPM.setText(String.valueOf(savedRPM));
