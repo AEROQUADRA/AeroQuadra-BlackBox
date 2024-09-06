@@ -31,14 +31,6 @@
                 android:inputType="number"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btnSaveRPM"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save RPM"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"/>
-
         <!-- Scaling Factor Input with Label -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,14 +53,6 @@
                 android:hint="Enter Scaling Factor"
                 android:inputType="numberDecimal"/>
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnSaveScalingFactor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save Scaling Factor"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"/>
 
         <!-- Rotate Left Power Input with Label -->
         <LinearLayout
@@ -162,11 +146,35 @@
                 android:inputType="number"/>
         </LinearLayout>
 
+        <!-- Heading Adjustment Factor Input with Label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Heading Adjustment Factor"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/editTextHeadingAdjustmentFactor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter Heading Adjustment Factor"
+                android:inputType="numberDecimal"/>
+        </LinearLayout>
+
+        <!-- Save All Settings Button -->
         <Button
-            android:id="@+id/btnSavePowers"
+            android:id="@+id/btnSaveAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save Powers"
+            android:text="Save All Settings"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"/>
 
