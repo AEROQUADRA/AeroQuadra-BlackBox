@@ -91,7 +91,7 @@ public class SettingsActivity extends AppCompatActivity {
         int rotateRightPower = Integer.parseInt(rotateRightString);
         int moveLeftPower = Integer.parseInt(moveLeftString);
         int moveRightPower = Integer.parseInt(moveRightString);
-        float headingAdjustmentFactor = Float.parseFloat(headingAdjustmentFactorString);
+        int headingAdjustmentFactor = Integer.parseInt(headingAdjustmentFactorString);
 
         // Save all settings to SharedPreferences
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -102,7 +102,7 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putInt(KEY_ROTATE_RIGHT_POWER, rotateRightPower);
         editor.putInt(KEY_MOVE_LEFT_POWER, moveLeftPower);
         editor.putInt(KEY_MOVE_RIGHT_POWER, moveRightPower);
-        editor.putFloat(KEY_HEADING_ADJUSTMENT_FACTOR, headingAdjustmentFactor);
+        editor.putInt(KEY_HEADING_ADJUSTMENT_FACTOR, headingAdjustmentFactor);
         editor.apply();
 
         Toast.makeText(this, "All settings saved successfully", Toast.LENGTH_SHORT).show();
