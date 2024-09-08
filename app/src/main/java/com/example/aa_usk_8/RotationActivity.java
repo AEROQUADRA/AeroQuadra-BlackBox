@@ -190,21 +190,21 @@ public class RotationActivity extends AppCompatActivity implements SensorEventLi
     private float calculateRequiredHeading(float constantHeading, int markerId) {
         switch (markerId) {
             case 1: // East
-                return constantHeading % 360; // East is constantHeading
+                return (constantHeading) % 360; // East is constantHeading
             case 2: // South-East
-                return (constantHeading + 45) % 360;
+                return (constantHeading + 45 +15) % 360;
             case 3: // South
-                return (constantHeading + 90) % 360;
+                return (constantHeading + 90 +10) % 360;
             case 4: // South-West
-                return (constantHeading + 135) % 360;
+                return (constantHeading + 135+10) % 360;
             case 5: // West
-                return (constantHeading + 180) % 360;
+                return (constantHeading + 180+10) % 360;
             case 6: // North-West
-                return (constantHeading + 225) % 360;
+                return (constantHeading + 225+10) % 360;
             case 7: // North
-                return (constantHeading + 270) % 360;
+                return (constantHeading + 270+10) % 360;
             case 8: // North-East
-                return (constantHeading + 315) % 360;
+                return (constantHeading + 315+10) % 360;
             default:
                 return constantHeading; // Default to constant heading if marker ID is unknown
         }

@@ -45,12 +45,15 @@ public class SettingsActivity extends AppCompatActivity {
         // Load saved values for all settings
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int savedRPM = prefs.getInt(KEY_WHEEL_RPM, 125);
-        float savedScalingFactor = prefs.getFloat(KEY_SCALING_FACTOR, 0.62f);
         int rotateLeftPower = prefs.getInt(KEY_ROTATE_LEFT_POWER, 75);
         int rotateRightPower = prefs.getInt(KEY_ROTATE_RIGHT_POWER, 75);
         int moveLeftPower = prefs.getInt(KEY_MOVE_LEFT_POWER, 75);
         int moveRightPower = prefs.getInt(KEY_MOVE_RIGHT_POWER, 75);
         int headingAdjustmentFactor = prefs.getInt(KEY_HEADING_ADJUSTMENT_FACTOR, 30);
+
+        // Load saved scaling factor from the correct SharedPreferences
+        SharedPreferences scalingPrefs = getSharedPreferences(PREFS_SCALING, MODE_PRIVATE);
+        float savedScalingFactor = scalingPrefs.getFloat(KEY_SCALING_FACTOR, 0.62f);
 
         // Set saved values to input fields
         editTextWheelRPM.setText(String.valueOf(savedRPM));
